@@ -1,11 +1,40 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from '../layouts/Layout.astro'
+import Dashboard from '../components/Dashboard'
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="ClimeCraft - Atlas de Riesgos">
+  <main class="w-full h-screen flex flex-col">
+    <header
+      class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm z-10"
+    >
+      <div class="flex items-center gap-2">
+        <div
+          class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold"
+        >
+          C
+        </div>
+        <h1
+          class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500"
+        >
+          ClimeCraft
+        </h1>
+      </div>
+      <div class="flex gap-4">
+        <button
+          class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+          >Comunidad</button
+        >
+        <button
+          class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"
+        >
+          Iniciar Análisis
+        </button>
+      </div>
+    </header>
+
+    <section class="flex-1 relative bg-gray-100 p-4">
+      <Dashboard client:only="react" />
+    </section>
+  </main>
 </Layout>
