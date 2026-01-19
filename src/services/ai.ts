@@ -19,9 +19,7 @@ export async function getRiskDiagnosis(
 
   try {
     const ai = new GoogleGenAI({ apiKey: API_KEY })
-
-    // Models to try with the new SDK
-    const modelsToTry = ['gemini-3-flash-preview']
+    const modelName = 'gemini-3-flash-preview'
 
     const prompt = `
       Actúa como un experto climatólogo.
@@ -39,24 +37,18 @@ export async function getRiskDiagnosis(
       }
     `
 
-    for (const modelName of modelsToTry) {
-      try {
-        const response = await ai.models.generateContent({
-          model: modelName,
-          contents: prompt,
-        })
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: prompt,
+    })
 
-        if (response.text) {
-          // Clean up potential markdown formatting (```json ... ```)
-          const cleanText = response.text
-            .replace(/```json/g, '')
-            .replace(/```/g, '')
-            .trim()
-          return JSON.parse(cleanText)
-        }
-      } catch (modelError: any) {
-        console.warn(`Model ${modelName} failed:`, modelError.message)
-      }
+    if (response.text) {
+      // Clean up potential markdown formatting (```json ... ```)
+      const cleanText = response.text
+        .replace(/```json/g, '')
+        .replace(/```/g, '')
+        .trim()
+      return JSON.parse(cleanText)
     }
 
     throw new Error('All Gemini models failed.')
