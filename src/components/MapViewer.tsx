@@ -63,7 +63,12 @@ const MapViewer: React.FC<MapViewerProps> = ({ onSelectLocation }) => {
             />
           </BaseLayer>
 
-          {/* Overlays example - OpenWeatherMap could go here later */}
+          <LayersControl.Overlay name="Zonas de Calor (OpenWeather)">
+            <TileLayer
+              url={`https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${import.meta.env.PUBLIC_OPENWEATHER_API_KEY}`}
+              attribution='&copy; <a href="https://openweathermap.org/">OpenWeather</a>'
+            />
+          </LayersControl.Overlay>
         </LayersControl>
         <MapEvents />
       </MapContainer>
@@ -75,7 +80,7 @@ const MapViewer: React.FC<MapViewerProps> = ({ onSelectLocation }) => {
           Explorador de Riesgos
         </h3>
         <p className="text-xs text-gray-600 mt-1">
-          Selecciona capas para ver inundaciones y zonas de calor.
+          Capas activas: Deforestación (Rojo) y Clima.
         </p>
       </div>
     </div>

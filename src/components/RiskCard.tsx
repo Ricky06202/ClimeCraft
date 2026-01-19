@@ -21,7 +21,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 )
 
 interface RiskData {
@@ -161,14 +161,18 @@ const RiskCard: React.FC<RiskCardProps> = ({ locationName, onClose, data }) => {
 
         {/* Diagnosis Text */}
         <div className="space-y-3">
-          <h3 className="text-sm font-bold text-gray-800">
-            Diagnóstico IA (Simulado)
+          <h3 className="text-sm font-bold text-gray-800 flex justify-between items-center">
+            Diagnóstico IA
+            {!data.aiDiagnosis && (
+              <span className="text-xs font-normal text-gray-500 animate-pulse">
+                Analizando...
+              </span>
+            )}
           </h3>
-          <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-md">
-            <p className="text-xs text-red-800 text-justify leading-relaxed">
-              La zona presenta una <strong>vulnerabilidad crítica</strong> a
-              deslizamientos debido a la pérdida del 40% de la capa vegetal en
-              los últimos 5 años y la proximidad a cuerpos de agua inestables.
+          <div className="p-3 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-md">
+            <p className="text-xs text-indigo-900 text-justify leading-relaxed">
+              {data.aiDiagnosis ||
+                'Generando análisis de riesgos basado en condiciones climáticas actuales...'}
             </p>
           </div>
         </div>
