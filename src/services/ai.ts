@@ -2,15 +2,22 @@ import { GoogleGenAI } from '@google/genai'
 
 const API_KEY = import.meta.env.PUBLIC_GEMINI_API_KEY
 
+export interface AIDiagnosisResult {
+  diagnosis: string
+  trend: number[]
+  error?: string
+  retryAfter?: number
+}
+
 export async function getRiskDiagnosis(
   locationName: string,
   weather: { temperatura: number; humedad: number; viento: number },
-): Promise<{ diagnosis: string; trend: number[] }> {
+): Promise<AIDiagnosisResult> {
   // Default fallback if no Key
-  const defaultFallback = {
+  const defaultFallback: AIDiagnosisResult = {
     diagnosis:
       'IA Simulado: Se detectan condiciones de riesgo moderado. Se recomienda monitoreo.',
-    trend: [85, 84, 83, 82, 80], // Default slight decline
+    trend: [0, 0, 0, 0, 0], // Default to zero when Gemini is not active
   }
 
   if (!API_KEY || API_KEY === 'your_gemini_key_here') {
@@ -52,8 +59,26 @@ export async function getRiskDiagnosis(
     }
 
     throw new Error('All Gemini models failed.')
-  } catch (error) {
+  } catch (error: any) {
     console.error('Gemini API Error:', error)
-    return defaultFallback
+
+    let retryAfter = 0
+    let errorMessage = ''
+
+    // Extract quota error info if present
+    if (error.message && error.message.includes('429')) {
+      errorMessage = 'Límite de cuota excedido'
+      const match = error.message.match(/"retryDelay":\s*"(\d+)s"/)
+      if (match) {
+        retryAfter = parseInt(match[1], 10)
+      }
+    }
+
+    return {
+      ...defaultFallback,
+      trend: [0, 0, 0, 0, 0], // Reset trend to avoid showing "fake" data on error
+      error: errorMessage || error.message,
+      retryAfter: retryAfter > 0 ? retryAfter : undefined,
+    }
   }
 }

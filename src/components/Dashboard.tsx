@@ -14,13 +14,15 @@ interface LocationData {
     riskLevel: 'Bajo' | 'Medio' | 'Alto'
     isSimulated: boolean
     aiDiagnosis?: string
+    aiError?: string
+    retryAfter?: number
   }
 }
 
 import { getWeatherData } from '../services/weather'
 import { getLocationName } from '../services/geocoding'
 import { getDeterministicData } from '../utils/simulation'
-import { getRiskDiagnosis } from '../services/ai'
+import { getRiskDiagnosis, type AIDiagnosisResult } from '../services/ai'
 
 const Dashboard: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(
@@ -78,8 +80,10 @@ const Dashboard: React.FC = () => {
             ...prev,
             riskData: {
               ...prev.riskData,
-              aiDiagnosis: aiResult.diagnosis,
-              vegetationTrend: aiResult.trend, // Update trend with AI data
+              aiDiagnosis: aiResult.error ? undefined : aiResult.diagnosis,
+              vegetationTrend: aiResult.trend,
+              aiError: aiResult.error,
+              retryAfter: aiResult.retryAfter,
             },
           }
         }

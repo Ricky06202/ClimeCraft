@@ -31,6 +31,9 @@ interface RiskData {
   vegetationTrend: number[]
   riskLevel: 'Bajo' | 'Medio' | 'Alto'
   isSimulated?: boolean
+  aiDiagnosis?: string
+  aiError?: string
+  retryAfter?: number
 }
 
 interface RiskCardProps {
@@ -151,31 +154,59 @@ const RiskCard: React.FC<RiskCardProps> = ({ locationName, onClose, data }) => {
           </div>
         </div>
 
-        {/* Chart */}
-        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3 block">
-            Tendencia de Deforestación
-          </h3>
-          <Line options={options} data={chartData} />
-        </div>
-
-        {/* Diagnosis Text */}
         <div className="space-y-3">
           <h3 className="text-sm font-bold text-gray-800 flex justify-between items-center">
             Diagnóstico IA
-            {!data.aiDiagnosis && (
+            {!data.aiDiagnosis && !data.aiError && (
               <span className="text-xs font-normal text-gray-500 animate-pulse">
                 Analizando...
               </span>
             )}
+            {data.aiError && (
+              <span className="text-xs font-normal text-red-500">
+                Límite de cuota
+              </span>
+            )}
           </h3>
-          <div className="p-3 bg-indigo-50 border-l-4 border-indigo-500 rounded-r-md">
-            <p className="text-xs text-indigo-900 text-justify leading-relaxed">
-              {data.aiDiagnosis ||
-                'Generando análisis de riesgos basado en condiciones climáticas actuales...'}
+          <div
+            className={cn(
+              'p-3 border-l-4 rounded-r-md',
+              data.aiError
+                ? 'bg-red-50 border-red-500'
+                : 'bg-indigo-50 border-indigo-500',
+            )}
+          >
+            <p
+              className={cn(
+                'text-xs text-justify leading-relaxed',
+                data.aiError ? 'text-red-900' : 'text-indigo-900',
+              )}
+            >
+              {data.aiError ? (
+                <>
+                  <strong>{data.aiError}:</strong> Has alcanzado el límite de 20
+                  peticiones diarias.{' '}
+                  {data.retryAfter
+                    ? `Debes esperar aprox. ${data.retryAfter} segundos para la próxima ráfaga.`
+                    : 'Inténtalo de nuevo más tarde.'}
+                </>
+              ) : (
+                data.aiDiagnosis ||
+                'Generando análisis de riesgos basado en condiciones climáticas actuales...'
+              )}
             </p>
           </div>
         </div>
+
+        {/* Chart - Only show when it has real data (non-zero) */}
+        {data.vegetationTrend?.some((v) => v !== 0) && (
+          <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 block">
+              Tendencia de Deforestación
+            </h3>
+            <Line options={options} data={chartData} />
+          </div>
+        )}
       </div>
 
       {/* Footer Actions */}
