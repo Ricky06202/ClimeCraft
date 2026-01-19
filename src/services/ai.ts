@@ -26,7 +26,7 @@ export async function getRiskDiagnosis(
 
   try {
     const ai = new GoogleGenAI({ apiKey: API_KEY })
-    const modelName = 'gemini-3-flash-preview'
+    const modelName = 'gemini-2.5-flash'
 
     const prompt = `
       Actúa como un experto climatólogo.
